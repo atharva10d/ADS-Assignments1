@@ -1,0 +1,153 @@
+Assignment 3
+Consider the scenario of a maze. The maze is represented as a grid of cells, where each cell can be either open or blocked. Each cell in the maze represents a vertex. The goal is to find a path from the starting point to the goal within a given maze using BFS.
+CODE:
+#include <iostream>
+using namespace std;
+
+struct Node 
+{
+    int vertex;
+    Node* next;
+};
+
+struct List
+{
+    Node* head;
+};
+
+struct QueueNode
+{
+    int data;
+    QueueNode* next;
+};
+
+class Queue
+{
+private:
+    QueueNode* front;
+    QueueNode* rear;
+public:
+    Queue() 
+    { 
+        front = rear = NULL; 
+    }
+
+    void enqueue(int val)
+    {
+        QueueNode* newNode = new QueueNode;
+        newNode->data = val;
+        newNode->next = NULL;
+        if (rear == NULL)
+        {
+            front = rear = newNode;
+            return;
+        }
+        rear->next = newNode;
+        rear = newNode;
+    }
+
+    int dequeue()
+    {
+        if (front == NULL)
+        {
+            cout << "Queue Underflow\n";
+            return -1;
+        }
+        int val = front->data;
+        QueueNode* temp = front;
+        front = front->next;
+        if (front == NULL)
+        {
+            rear = NULL;
+        }
+        delete temp;
+        return val;
+    }
+
+    bool isEmpty()
+    {
+        return front == NULL; 
+    }
+};
+
+class Graph 
+{
+private:
+    int vertices;
+    List* adjacencyList;
+public:
+    Graph(int numVertices)
+    {
+        vertices = numVertices;
+        adjacencyList = new List[vertices];
+        for (int i = 0; i < vertices; i++)
+        {
+            adjacencyList[i].head = NULL;
+        }
+    }
+
+    void addEdge(int src, int dest)
+    {
+        Node* newNode = new Node;
+        newNode->vertex = dest;
+        newNode->next = adjacencyList[src].head;
+        adjacencyList[src].head = newNode;
+
+        newNode = new Node;
+        newNode->vertex = src;
+        newNode->next = adjacencyList[dest].head;
+        adjacencyList[dest].head = newNode;
+    }
+
+    void bfs(int start)
+    {
+        Queue Q;
+        int visited[vertices] = {0};
+        Q.enqueue(start);
+        visited[start] = 1;
+        while (!Q.isEmpty())
+        {
+            int current = Q.dequeue();
+            cout << current << " ";
+            Node* temp = adjacencyList[current].head;
+            while (temp != NULL)
+            {
+                if (visited[temp->vertex] == 0)
+                {
+                    Q.enqueue(temp->vertex);
+                    visited[temp->vertex] = 1;
+                }
+                temp = temp->next;
+            }
+        }
+        cout << endl;
+    }
+};
+
+int main()
+{
+    int numVertices, numEdges;
+    cout << "Enter number of vertices: ";
+    cin >> numVertices;
+    Graph g(numVertices);
+
+    cout << "Enter number of edges: ";
+    cin >> numEdges;
+    
+    cout << "Enter edges (source destination):\n";
+    for (int i = 0; i < numEdges; i++) 
+    {
+        int src, dest;
+        cin >> src >> dest;
+        g.addEdge(src, dest);
+    }
+
+    int startNode;
+    cout << "Enter starting node for BFS: ";
+    cin >> startNode;
+    cout << "BFS Traversal: ";
+    g.bfs(startNode);
+
+    cout << "\nDone\n";
+    return 0;
+}
