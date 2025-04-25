@@ -1,0 +1,109 @@
+Assignment 4
+Represent a graph of your college campus using adjacency list /adjacency matrix. Nodes should represent the various departments and links should represent the distance between them. Find a minimum spanning tree using Kruskal’s algorithm or using Prim’s algorithm.
+
+#include <iostream>
+using namespace std;
+
+class PrimsGraph 
+{
+    int graph[100][100];
+    int nodes;
+
+public:
+    PrimsGraph(int n) 
+    {
+        nodes = n;
+        for (int i = 0; i < nodes; i++) 
+        {
+            for (int j = 0; j < nodes; j++) 
+            {
+                graph[i][j] = 0;
+            }
+        }
+    }
+
+    void insertEdge(int u, int v, int w) 
+    {
+        graph[u][v] = w;
+        graph[v][u] = w;
+    }
+
+    void primMST() 
+    {
+        int selected[100] = {0};
+        int edgeCount = 0;
+        selected[0] = 1;
+        int totalWeight = 0;
+
+        cout << "\nEdges in the Minimum Spanning Tree (Prim's):\n";
+
+        while (edgeCount < nodes - 1) 
+        {
+            int min = 9999;
+            int x = -1;
+            int y = -1;
+
+            for (int i = 0; i < nodes; i++) 
+            {
+                if (selected[i]) 
+                {
+                    for (int j = 0; j < nodes; j++) 
+                    {
+                        if (!selected[j] && graph[i][j] != 0) 
+                        {
+                            if (graph[i][j] < min) 
+                            {
+                                min = graph[i][j];
+                                x = i;
+                                y = j;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (x != -1 && y != -1) 
+            {
+                cout << x + 1 << " - " << y + 1 << " : " << graph[x][y] << "\n";
+                totalWeight += graph[x][y];
+                selected[y] = 1;
+                edgeCount++;
+            }
+        }
+
+        cout << "Total Weight of MST = " << totalWeight << "\n";
+    }
+};
+
+int main() 
+{
+    int nodes, edges;
+
+    cout << "Enter number of departments (nodes): ";
+    cin >> nodes;
+
+    PrimsGraph g(nodes);
+
+    cout << "Enter number of paths (edges): ";
+    cin >> edges;
+
+    for (int i = 0; i < edges; i++) 
+    {
+        int u, v, w;
+        cout << "Enter edge " << i + 1 << " (format: node1 node2 distance): ";
+        cin >> u >> v >> w;
+
+        if (u < 1 || v < 1 || u > nodes || v > nodes) 
+        {
+            cout << "Invalid input. Enter nodes between 1 and " << nodes << ".\n";
+            i--;
+            continue;
+        }
+
+        g.insertEdge(u - 1, v - 1, w);
+    }
+
+    g.primMST();
+
+    return 0;
+}
